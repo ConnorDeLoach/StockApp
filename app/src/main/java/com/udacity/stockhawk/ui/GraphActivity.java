@@ -11,23 +11,25 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.utils.EntryXComparator;
 import com.udacity.stockhawk.R;
 import com.udacity.stockhawk.data.Contract;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
-public class GraphActivity extends AppCompatActivity implements IAxisValueFormatter {
+public class GraphActivity extends AppCompatActivity {
     private Intent mIntent;
     private ArrayList<Entry> mEntries = new ArrayList<>();
     private String mValues;
     private String mSymbol;
+    private MyAxisValueFormatter mFormatter;
 
 
     @Override
@@ -52,33 +54,40 @@ public class GraphActivity extends AppCompatActivity implements IAxisValueFormat
         }
 
         // Create Entries <date - price>
-        // Store index as float paired with price
-        String[] a = mValues.split(",");
-        for (int i = 0; i < a.length; i += 2) {
-            Entry entry = new Entry((float) i, (float) i + 2);
-            mEntries.add(entry);
+        String[] valueArray = mValues.split("\\r?\\n");
+        for (int i = 0; i < valueArray.length; i++) {
+            String str = valueArray[i];
+            String[] a = str.split(",");
+
+            Entry entry = new Entry(Float.parseFloat(a[0]), Float.parseFloat(a[1]));
+            mEntries.add(i, entry);
         }
+
+        // Sort Entries
+        Collections.sort(mEntries, new EntryXComparator());
 
         //Line chart
         LineChart mChart = (LineChart) findViewById(R.id.linechart);
-        LineDataSet lineDataSet = new LineDataSet(mEntries, "Price");
+        LineDataSet lineDataSet = new LineDataSet(mEntries, mSymbol + " Stock Price");
         LineData lineData = new LineData(lineDataSet);
         lineData.setValueTextColor(0xffffffff);
         mChart.setData(lineData);
+        mChart.getDescription().setEnabled(false);
+        mChart.setScaleMinima(10f, 1f);
 
+        mFormatter = new MyAxisValueFormatter();
         // Format x-axis label
         XAxis xAxis = mChart.getXAxis();
         xAxis.setTextColor(0xffffffff);
+        xAxis.setValueFormatter(mFormatter);
 
         // Format y-axis
         YAxis leftYAxis = mChart.getAxisLeft();
-        YAxis rightYAxis = mChart.getAxisRight();
+        mChart.getAxisRight().setEnabled(false);
         leftYAxis.setTextColor(0xffffffff);
-        rightYAxis.setTextColor(0xffffffff);
-    }
 
-    @Override
-    public String getFormattedValue(float value, AxisBase axis) {
-        return null;
+        // Format legend
+        Legend legend = mChart.getLegend();
+        legend.setTextColor(0xffffffff);
     }
 }

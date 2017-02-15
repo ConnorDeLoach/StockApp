@@ -54,8 +54,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         Intent intent = new Intent(this, GraphActivity.class);
         intent.putExtra("symbol", symbol);
         this.startActivity(intent);
-
-        Toast.makeText(this, "Hello", Toast.LENGTH_SHORT).show();
     }
 
     @Override
