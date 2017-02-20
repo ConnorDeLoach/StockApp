@@ -35,8 +35,7 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
             RemoteViews rv = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
             // Set up the RemoteViews object to use a RemoteViews adapter.
             // This adapter connects to a RemoteViewsService  through the specified intent.
-            // This is how you populate the data.
-            rv.setRemoteAdapter(appWidgetIds[i], intent);
+            rv.setRemoteAdapter(R.id.widget_listview, intent);
 
             appWidgetManager.updateAppWidget(appWidgetIds[i], rv);
         }

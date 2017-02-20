@@ -27,7 +27,12 @@ public class MyRemoteViewsFactory implements RemoteViewsService.RemoteViewsFacto
 
     @Override
     public void onCreate() {
-
+        mCursor = mContext.getContentResolver().query(
+                Contract.Quote.URI,
+                Contract.Quote.QUOTE_COLUMNS.toArray(new String[]{}),
+                null,
+                null,
+                Contract.Quote.COLUMN_SYMBOL);
     }
 
     @Override
@@ -50,7 +55,7 @@ public class MyRemoteViewsFactory implements RemoteViewsService.RemoteViewsFacto
 
     @Override
     public int getCount() {
-        return 0;
+        return mCursor.getCount();
     }
 
     @Override
@@ -60,7 +65,7 @@ public class MyRemoteViewsFactory implements RemoteViewsService.RemoteViewsFacto
         String sym = mCursor.getString(Contract.Quote.POSITION_SYMBOL);
 
         // Wire data to views
-        RemoteViews list = new RemoteViews(mContext.getPackageName(), R.layout.widget_layout);
+        RemoteViews list = new RemoteViews(mContext.getPackageName(), R.id.widget_textView);
         list.setTextViewText(R.id.widget_textView, sym);
         return list;
     }
@@ -72,7 +77,7 @@ public class MyRemoteViewsFactory implements RemoteViewsService.RemoteViewsFacto
 
     @Override
     public int getViewTypeCount() {
-        return 0;
+        return 1;
     }
 
     @Override
