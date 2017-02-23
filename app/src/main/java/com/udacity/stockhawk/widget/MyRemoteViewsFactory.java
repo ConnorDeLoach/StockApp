@@ -4,11 +4,14 @@ import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Binder;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import com.udacity.stockhawk.R;
 import com.udacity.stockhawk.data.Contract;
+import com.udacity.stockhawk.data.PrefUtils;
+import com.udacity.stockhawk.data.Utils;
 
 /**
  * Adapter for remote views to attack to widget listview
@@ -18,7 +21,7 @@ public class MyRemoteViewsFactory implements RemoteViewsService.RemoteViewsFacto
 
     private Context mContext;
     private int mAppId;
-    private Cursor mCursor;
+    private Cursor cursor;
 
     public MyRemoteViewsFactory(Context context, Intent intent) {
         mContext = context;
@@ -27,25 +30,21 @@ public class MyRemoteViewsFactory implements RemoteViewsService.RemoteViewsFacto
 
     @Override
     public void onCreate() {
-        mCursor = mContext.getContentResolver().query(
-                Contract.Quote.URI,
-                Contract.Quote.QUOTE_COLUMNS.toArray(new String[]{}),
-                null,
-                null,
-                Contract.Quote.COLUMN_SYMBOL);
     }
 
     @Override
     public void onDataSetChanged() {
-        if (mCursor != null) {
-            mCursor.close();
+        if (cursor != null) {
+            cursor.close();
         }
-        mCursor = mContext.getContentResolver().query(
+        final long serviceUID = Binder.clearCallingIdentity();
+        cursor = mContext.getContentResolver().query(
                 Contract.Quote.URI,
                 Contract.Quote.QUOTE_COLUMNS.toArray(new String[]{}),
                 null,
                 null,
                 Contract.Quote.COLUMN_SYMBOL);
+        Binder.restoreCallingIdentity(serviceUID);
     }
 
     @Override
@@ -55,19 +54,41 @@ public class MyRemoteViewsFactory implements RemoteViewsService.RemoteViewsFacto
 
     @Override
     public int getCount() {
-        return mCursor.getCount();
+        return cursor.getCount();
     }
 
     @Override
     public RemoteViews getViewAt(int position) {
+        RemoteViews view = new RemoteViews(mContext.getPackageName(), R.layout.list_item_quote);
+
         // Get data from cursor
-        mCursor.moveToPosition(position);
-        String sym = mCursor.getString(Contract.Quote.POSITION_SYMBOL);
+        cursor.moveToPosition(position);
+        String sym = cursor.getString(Contract.Quote.POSITION_SYMBOL);
+        float price = cursor.getFloat(Contract.Quote.POSITION_PRICE);
 
         // Wire data to views
-        RemoteViews list = new RemoteViews(mContext.getPackageName(), R.id.widget_textView);
-        list.setTextViewText(R.id.widget_textView, sym);
-        return list;
+        view.setTextViewText(R.id.symbol, sym);
+        view.setTextViewText(R.id.price, Utils.getDollarFormat().format(price));
+
+        float rawAbsoluteChange = cursor.getFloat(Contract.Quote.POSITION_ABSOLUTE_CHANGE);
+        float percentageChange = cursor.getFloat(Contract.Quote.POSITION_PERCENTAGE_CHANGE);
+
+        if (rawAbsoluteChange > 0) {
+            view.setInt(R.id.change, "setBackgroundResource", R.drawable.percent_change_pill_green);
+        } else {
+            view.setInt(R.id.change, "setBackgroundResource", R.drawable.percent_change_pill_red);
+        }
+
+        String change = Utils.getDollarFormatWithPlus().format(rawAbsoluteChange);
+        String percentage = Utils.getPercentageFormat().format(percentageChange / 100);
+
+        if (PrefUtils.getDisplayMode(mContext).equals(mContext.getString(R.string.pref_display_mode_absolute_key))) {
+            view.setTextViewText(R.id.change, change);
+        } else {
+            view.setTextViewText(R.id.change, percentage);
+        }
+
+        return view;
     }
 
     @Override
@@ -82,11 +103,11 @@ public class MyRemoteViewsFactory implements RemoteViewsService.RemoteViewsFacto
 
     @Override
     public long getItemId(int position) {
-        return 0;
+        return position;
     }
 
     @Override
     public boolean hasStableIds() {
-        return false;
+        return true;
     }
 }

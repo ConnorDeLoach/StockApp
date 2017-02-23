@@ -2,6 +2,7 @@ package com.udacity.stockhawk.widget;
 
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -18,7 +19,18 @@ public class MyAppWidgetProvider extends AppWidgetProvider {
     @Override
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
-        // TODO: handle both types of intents
+
+        // receive broadcast from QuoteSyncJob after it has updated the database
+        String action = context.getString(R.string.action_data_updated);
+        if (intent.getAction().equals(action)) {
+
+            // Retrieve appIds and notifydatachange
+            AppWidgetManager awm = AppWidgetManager.getInstance(context);
+            ComponentName name = new ComponentName(context, MyAppWidgetProvider.class);
+            int[] appWidgetIds = awm.getAppWidgetIds(name);
+            awm.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_listview);
+
+        }
     }
 
     @Override
