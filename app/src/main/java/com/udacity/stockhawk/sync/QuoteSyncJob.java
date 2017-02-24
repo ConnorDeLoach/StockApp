@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.widget.Toast;
 
 import com.udacity.stockhawk.R;
 import com.udacity.stockhawk.data.Contract;
@@ -109,8 +108,6 @@ public final class QuoteSyncJob {
                     quoteCVs.add(quoteCV);
                 } else {
                     Timber.d("Invalid stock added: %s", stock.getSymbol());
-                    // TODO: Why does this toast not show?
-                    Toast.makeText(context, context.getText(R.string.error_invalid_stock), Toast.LENGTH_SHORT).show();
                     PrefUtils.removeStock(context, stock.getSymbol());
                 }
             }
