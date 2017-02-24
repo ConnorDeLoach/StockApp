@@ -68,7 +68,7 @@ public class GraphActivity extends AppCompatActivity {
 
         //Line chart
         LineChart mChart = (LineChart) findViewById(R.id.linechart);
-        LineDataSet lineDataSet = new LineDataSet(mEntries, mSymbol + " Stock Price");
+        LineDataSet lineDataSet = new LineDataSet(mEntries, mSymbol + " " + getString(R.string.graph_legend));
         LineData lineData = new LineData(lineDataSet);
         lineData.setValueTextColor(0xffffffff);
         mChart.setData(lineData);
