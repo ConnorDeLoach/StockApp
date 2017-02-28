@@ -9,7 +9,7 @@ import java.util.Calendar;
  * Class to format XAxis values for GraphActivity
  */
 
-public class MyAxisValueFormatter implements IAxisValueFormatter {
+class MyAxisValueFormatter implements IAxisValueFormatter {
 
     public MyAxisValueFormatter() {
     }
