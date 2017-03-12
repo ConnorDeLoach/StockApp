@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-import com.udacity.stockhawk.R;
 import com.udacity.stockhawk.data.Contract;
 import com.udacity.stockhawk.data.PrefUtils;
 
@@ -28,6 +27,8 @@ import yahoofinance.YahooFinance;
 import yahoofinance.histquotes.HistoricalQuote;
 import yahoofinance.histquotes.Interval;
 import yahoofinance.quotes.stock.StockQuote;
+
+import static com.udacity.stockhawk.data.Utils.notifyWidgetDataSetChanged;
 
 public final class QuoteSyncJob {
 
@@ -107,8 +108,8 @@ public final class QuoteSyncJob {
 
                     quoteCVs.add(quoteCV);
                 } else {
-                    Timber.d("Invalid stock added: %s", stock.getSymbol());
-                    PrefUtils.removeStock(context, stock.getSymbol());
+                    Timber.d("Invalid stock added: %s", symbol);
+                    PrefUtils.removeStock(context, symbol);
                 }
             }
 
@@ -117,8 +118,8 @@ public final class QuoteSyncJob {
                             Contract.Quote.URI,
                             quoteCVs.toArray(new ContentValues[quoteCVs.size()]));
 
-            Intent dataUpdatedIntent = new Intent(context.getString(R.string.action_data_updated));
-            context.sendBroadcast(dataUpdatedIntent);
+            // Sent broadcast for WidgetProvider to refresh data
+            notifyWidgetDataSetChanged(context);
 
         } catch (IOException exception) {
             Timber.e(exception, "Error fetching stock quotes");

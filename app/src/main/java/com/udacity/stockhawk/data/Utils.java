@@ -1,5 +1,10 @@
 package com.udacity.stockhawk.data;
 
+import android.content.Context;
+import android.content.Intent;
+
+import com.udacity.stockhawk.R;
+
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
@@ -17,7 +22,7 @@ public class Utils {
         return (DecimalFormat) NumberFormat.getCurrencyInstance(Locale.US);
     }
 
-    static public DecimalFormat getDollarFormatWithPlus() {
+    public static DecimalFormat getDollarFormatWithPlus() {
         DecimalFormat dollarFormatWithPlus = (DecimalFormat) NumberFormat.getCurrencyInstance(Locale.US);
         dollarFormatWithPlus.setPositivePrefix("+$");
 
@@ -31,5 +36,10 @@ public class Utils {
         percentageFormat.setPositivePrefix("+");
 
         return percentageFormat;
+    }
+
+    public static void notifyWidgetDataSetChanged(Context context) {
+        Intent dataUpdatedIntent = new Intent(context.getString(R.string.action_data_updated));
+        context.sendBroadcast(dataUpdatedIntent);
     }
 }
