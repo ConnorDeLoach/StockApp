@@ -1,7 +1,9 @@
 package com.udacity.stockhawk.ui;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -9,6 +11,7 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -46,6 +49,15 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @BindView(R.id.error)
     TextView error;
     private StockAdapter adapter;
+    private BroadcastReceiver wrongStockReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String error = intent.getStringExtra("error");
+            Timber.e("Non-existent stock input: %s", error);
+
+            Toast.makeText(context, getString(R.string.error_wrong_stock), Toast.LENGTH_SHORT).show();
+        }
+    };
 
     @Override
     public void onClick(String symbol) {
@@ -58,6 +70,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Register the local broadcast
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                wrongStockReceiver,
+                new IntentFilter(getString(R.string.action_wrong_stock))
+        );
 
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);

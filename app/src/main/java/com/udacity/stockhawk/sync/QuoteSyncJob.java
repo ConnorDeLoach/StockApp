@@ -8,7 +8,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.v4.content.LocalBroadcastManager;
 
+import com.udacity.stockhawk.R;
 import com.udacity.stockhawk.data.Contract;
 import com.udacity.stockhawk.data.PrefUtils;
 
@@ -110,6 +112,8 @@ public final class QuoteSyncJob {
                 } else {
                     Timber.d("Invalid stock added: %s", symbol);
                     PrefUtils.removeStock(context, symbol);
+                    Intent intent = new Intent(context.getString(R.string.action_wrong_stock));
+                    LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
                 }
             }
 

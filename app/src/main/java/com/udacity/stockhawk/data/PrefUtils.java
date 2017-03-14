@@ -36,7 +36,8 @@ public final class PrefUtils {
 
     private static void editStockPref(Context context, String symbol, Boolean add) {
         String key = context.getString(R.string.pref_stocks_key);
-        Set<String> stocks = getStocks(context);
+        Set<String> hs = getStocks(context);
+        Set<String> stocks = new HashSet<>(hs); // Makes copy to force SharedPreferencesManager to register changes
 
         if (add) {
             stocks.add(symbol);

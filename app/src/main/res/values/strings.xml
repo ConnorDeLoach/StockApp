@@ -29,12 +29,14 @@
 
     <string name="error_no_network">No network connectivity! Will load stock cursor when the network is available.</string>
     <string name="error_no_stocks">No stocks added! Hit the floating action button to add one.</string>
+    <string name="error_wrong_stock">Uh oh! The stock you added was invalid!</string>
 
     <string name="toast_stock_added_no_connectivity">Symbol %s added. Will refresh when network available.</string>
     <string name="toast_no_connectivity">Will refresh when network available.</string>
 
     <!-- Broadcast Strings. WARNING: also must update changes in the manifest -->
     <string name="action_data_updated" translatable="false">com.udacity.stockhawk.ACTION_DATA_UPDATED</string>
+    <string name="action_wrong_stock" translatable="false">com.udacity.stockhawk.ACTION_WRONG_STOCK</string>
 
     <!-- Content Descriptions -->
     <string name="description_fab">Tap this button to add new stocks.</string>
